@@ -1,0 +1,60 @@
+services:
+  mariadb:
+    build: ./requirements/mariadb
+    container_name: mariadb
+    env_file: .env
+    networks:
+      - docker-network
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    restart: always
+    image: mariadb:0.0
+    pull_policy: never
+    hostname: mariadb
+  wordpress:
+    networks:
+      - docker-network
+    build : ./requirements/wordpress
+    container_name: wordpress
+    env_file: .env
+    restart: always
+    depends_on:
+      - mariadb
+    volumes:
+      - wordpress_data:/var/www/html
+    hostname: wordpress
+    image : wordpress:0.0
+    pull_policy: never
+  nginx:
+    build: ./requirements/nginx
+    container_name: nginx
+    ports:
+      - "443:443"
+    volumes:
+      -  wordpress_data:/var/html/www/wordpress
+    depends_on:
+      - wordpress
+    restart: always
+    networks:
+      - docker-network
+    hostname: nginx
+    image: nginx:0.0
+    pull_policy: never
+networks:
+  docker-network:
+    driver: bridge
+volumes:
+  mariadb_data:
+    name : mariadb
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '${HOME}/data/mariadb'
+  wordpress_data:
+    name: wordpress
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '${HOME}/data/wordpress'
