@@ -1,8 +1,7 @@
-
 server {
     listen 443 ssl;
 	listen [::]:443 ssl;
-    server_name mezzine.42.fr;
+    server_name agaougao.42.fr;
 
     root /var/html/www/wordpress;
     index index.php index.html index.htm;
